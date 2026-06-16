@@ -1,6 +1,21 @@
 <%# To use this component create a parent div with the required height and width otherwise
 nothing will be shown %>
-<%= tag.div class: "w-full h-full",
-            "x-init" => "initialisePano($el, #{{ lat: @lat, lng: @lng, address: @address }.to_json})" do %>
-  <noscript><%= content %></noscript>
-<% end %>
+<div class="w-full h-full relative"
+     data-streetview-target
+     data-lat="<%= @lat %>"
+     data-lng="<%= @lng %>"
+     data-address="<%= @address %>">
+  <div data-streetview-facade class="w-full h-full">
+    <%= content %>
+  </div>
+  <div data-streetview-overlay class="absolute inset-0 bg-black/25 flex flex-col items-center justify-center gap-3">
+    <p class="text-white font-bold text-base [text-shadow:0_1px_3px_rgba(0,0,0,0.8)]">
+      Explore the surrounding community view
+    </p>
+    <button data-streetview-activate
+            class="bg-white text-gray-800 font-bold text-sm px-5 py-2.5 rounded border border-gray-300 shadow cursor-pointer hover:bg-gray-50">
+      Activate 360° Street View
+    </button>
+  </div>
+  <div data-streetview-canvas class="absolute inset-0 hidden"></div>
+</div>

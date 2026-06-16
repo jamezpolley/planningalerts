@@ -1,4 +1,17 @@
-<%= tag.div class: "bg-google-maps-green w-full h-full",
-            "x-init" => "initialiseBasicMapWithMarker($el, #{{ lat: @lat, lng: @lng, address: @address, zoom: @zoom }.to_json})" do %>
-  <noscript><%= content %></noscript>
-<% end %>
+<div class="bg-google-maps-green w-full h-full relative"
+     data-map-target
+     data-lat="<%= @lat %>"
+     data-lng="<%= @lng %>"
+     data-zoom="<%= @zoom %>"
+     data-address="<%= @address %>">
+  <div data-map-facade class="w-full h-full">
+    <%= content %>
+  </div>
+  <div data-map-overlay class="absolute inset-0 bg-black/20 flex items-center justify-center">
+    <button data-map-activate
+            class="bg-white text-gray-800 font-bold text-sm px-5 py-2.5 rounded border border-gray-300 shadow cursor-pointer hover:bg-gray-50">
+      Activate Interactive Map
+    </button>
+  </div>
+  <div data-map-canvas class="absolute inset-0 hidden"></div>
+</div>
