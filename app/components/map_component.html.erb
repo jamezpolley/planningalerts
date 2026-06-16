@@ -5,7 +5,11 @@
      data-zoom="<%= @zoom %>"
      data-address="<%= @address %>">
   <div data-map-facade class="w-full h-full">
-    <%= content %>
+    <img data-map-facade-img
+         data-src="<%= @static_src %>"
+         alt="Map of <%= @address %>"
+         class="w-full h-full object-cover">
+    <noscript><%= content %></noscript>
   </div>
   <div data-map-overlay class="absolute inset-0 bg-black/20 flex items-center justify-center">
     <button data-map-activate
