@@ -1,4 +1,18 @@
 (function() {
+  // Don't auto-load facade images for pages rendered more than this long ago.
+  // Saved-and-replayed HTML (scrapers) opens our pages hours-to-weeks later and
+  // would otherwise trigger billable static-image fetches. Threshold informed by
+  // the MapGate page-age measurement. Fails open if the stamp is missing.
+  var MAX_FACADE_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  function pageIsFresh() {
+    var meta = document.querySelector('meta[name="rendered-at"]');
+    if (!meta) return true; // fail open: no stamp -> behave as before
+    var renderedAt = Date.parse(meta.getAttribute('content'));
+    if (isNaN(renderedAt)) return true; // fail open: unparseable
+    return (Date.now() - renderedAt) <= MAX_FACADE_AGE_MS;
+  }
+
   function trackPlausibleGoal(eventName) {
     if (typeof window.plausible === 'function') {
       window.plausible(eventName);
@@ -75,6 +89,8 @@
       button.replaceWith(fresh);
       fresh.addEventListener('click', () => activateStreetView(fresh.closest('[data-streetview-target]')));
     });
+
+    if (!pageIsFresh()) return;
 
     document.querySelectorAll('[data-map-target], [data-streetview-target]').forEach(container => {
       whenVisible(() => promoteFacade(container));
