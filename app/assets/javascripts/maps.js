@@ -1,6 +1,40 @@
 //= require pano_utils
 
+// --- Page-staleness measurement (see map-staleness-measurement-brief.md) ---
+// Measure how long after a page is served the (billable) Google Maps assets
+// actually load. This sizes the share of traffic that is saved-and-replayed HTML
+// (scrapers replaying stored pages hours/weeks later). Measurement only: it never
+// changes what loads or when, and is fire-and-forget. Deduped to once per page.
+function ageBucket(ms) {
+  var m = ms / 60000;
+  if (m < 1)    return '<1m';
+  if (m < 10)   return '1-10m';
+  if (m < 60)   return '10-60m';
+  if (m < 720)  return '1-12h';
+  if (m < 1440) return '12-24h';
+  return '>1d';
+}
+
+function reportMapGate() {
+  if (window.__mapGateFired) return;
+  window.__mapGateFired = true;
+
+  // Plausible queue stub (safe even if the script tag is already present).
+  window.plausible = window.plausible || function() {
+    (window.plausible.q = window.plausible.q || []).push(arguments);
+  };
+
+  var stamp = document
+    .querySelector('meta[name="rendered-at"]')
+    ?.getAttribute('content');
+  if (!stamp) return;
+
+  var age = Date.now() - Date.parse(stamp);
+  plausible('MapGate', { props: { age: ageBucket(age) } });
+}
+
 async function initialisePano(elem, params) {
+  reportMapGate();
   const { StreetViewPanorama } = await google.maps.importLibrary("streetView");
   const { Marker } = await google.maps.importLibrary("marker");
   const { LatLng } = await google.maps.importLibrary("core");
@@ -27,6 +61,7 @@ async function initialisePano(elem, params) {
 }
 
 async function initialiseBasicMapWithMarker(map_div, params) {
+  reportMapGate();
   const { Map } = await google.maps.importLibrary("maps");
   const { Marker } = await google.maps.importLibrary("marker");
 
