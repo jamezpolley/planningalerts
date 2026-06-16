@@ -12,6 +12,11 @@
 </title>
 <%= yield :extra_meta_tags %>
 
+<%# Per-request render time, in UTC. Used to measure how long after a page is
+    served the (billable) Google Maps assets actually load — see maps.js. Must be
+    set fresh per request, so do not cache map-bearing pages. %>
+<meta name="rendered-at" content="<%= Time.now.utc.iso8601 %>">
+
 <%= render "google_tag_manager" %>
 <%= render "analytics" %>
 
