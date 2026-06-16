@@ -6,7 +6,11 @@ nothing will be shown %>
      data-lng="<%= @lng %>"
      data-address="<%= @address %>">
   <div data-streetview-facade class="w-full h-full">
-    <%= content %>
+    <img data-streetview-facade-img
+         data-src="<%= @static_src %>"
+         alt="Streetview of <%= @address %>"
+         class="w-full h-full object-cover">
+    <noscript><%= content %></noscript>
   </div>
   <div data-streetview-overlay class="absolute inset-0 bg-black/25 flex flex-col items-center justify-center gap-3">
     <p class="text-white font-bold text-base [text-shadow:0_1px_3px_rgba(0,0,0,0.8)]">

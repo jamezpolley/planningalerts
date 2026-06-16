@@ -40,6 +40,15 @@
     trackPlausibleGoal('Activate Street View');
   }
 
+  function promoteFacade(container) {
+    container.querySelectorAll('img[data-src]').forEach(img => {
+      if (!img.getAttribute('src')) {
+        img.src = img.dataset.src;
+      }
+      img.removeAttribute('data-src');
+    });
+  }
+
   function bindListeners() {
     document.querySelectorAll('[data-map-activate]').forEach(button => {
       const fresh = button.cloneNode(true);
@@ -52,6 +61,8 @@
       button.replaceWith(fresh);
       fresh.addEventListener('click', () => activateStreetView(fresh.closest('[data-streetview-target]')));
     });
+
+    document.querySelectorAll('[data-map-target], [data-streetview-target]').forEach(promoteFacade);
   }
 
   document.addEventListener('DOMContentLoaded', bindListeners);
